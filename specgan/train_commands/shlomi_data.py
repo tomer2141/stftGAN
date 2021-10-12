@@ -18,29 +18,88 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 import scipy.io
 import scipy.signal
+import librosa
+from data.strechableNumpyArray import StrechableNumpyArray
+from data.ourLTFATStft import LTFATStft
+from data.modGabPhaseGrad import modgabphasegrad
+import ltfatpy
+ltfatpy.gabphasegrad = modgabphasegrad # This function is not implemented for one sided stfts with the phase method on ltfatpy
+
 
 downscale = 1
 
 print('start')
 
+i = 0
+total = 0
+audios = StrechableNumpyArray()
+
 wav_dir_path = "../../data/test_shlomi_dataset"
 preprocessed_images = []
 for wav_filename in os.listdir(wav_dir_path):
     if wav_filename.endswith(".wav"):
-        fs, x = scipy.io.wavfile.read(os.path.join(wav_dir_path, wav_filename))
-        x = scipy.signal.stft(x, fs=16384, noverlap=128)
-        print (x, type(x[0]), x[0].shape)
-        input()
-        preprocessed_images.append(x)
-        if (len(preprocessed_images) > 500):
+        audio, sr = librosa.load(os.path.join(wav_dir_path, wav_filename), sr=None, dtype=np.float64)
+        if len(audio) < 16000:
+            before = int(np.floor((16000-len(audio))/2))
+            after = int(np.ceil((16000-len(audio))/2))
+            audio = np.pad(audio, (before, after), 'constant', constant_values=(0, 0))
+        if len(audio) > 16000: 
+            # print(wav_filename, "is too long: ", len(audio))
+            pass
+        if np.sum(np.absolute(audio)) < len(audio)*1e-4: 
+            print(wav_filename, "doesn't meet the minimum amplitude requirement")
+            continue
+
+        audios.append(audio[:16000])
+        i+=1
+
+        if i > 1000:
+            i -= 1000
+            total += 1000
+            print("1000 plus!", total)
             break
+
+        # fs, x = scipy.io.wavfile.read(os.path.join(wav_dir_path, wav_filename))
+        # x = scipy.signal.stft(x, fs=16384, noverlap=128)[2][0:-1, 0:-1]
+        # preprocessed_images.append(x)
+        # if (len(preprocessed_images) > 500):
+        #     break
     else:
         continue
+print("there were:", total+i)
 
-preprocessed_images = np.asarray(preprocessed_images)
+audios = audios.finalize()
+print (audios.shape)
+audios = np.reshape(audios, (total+i, 16000)).astype(np.float64)
+print("audios shape:", audios.shape)
+
+fft_hop_size = 128
+fft_window_length = 512
+L = 16384
+clipBelow = -10
+anStftWrapper = LTFATStft()
+
+spectrograms = np.zeros([len(audios), int(fft_window_length//2+1), int(L/fft_hop_size)], dtype=np.float64)
+tgrads = np.zeros([len(audios), int(fft_window_length//2+1), int(L/fft_hop_size)], dtype=np.float64)
+fgrads = np.zeros([len(audios), int(fft_window_length//2+1), int(L/fft_hop_size)], dtype=np.float64)
+print(spectrograms.shape)
+gs = {'name': 'gauss', 'M': 512}
+    
+for index, audio in enumerate(audios):
+    realDGT = anStftWrapper.oneSidedStft(signal=audio, windowLength=fft_window_length, hopSize=fft_hop_size)
+    spectrogram = anStftWrapper.logMagFromRealDGT(realDGT, clipBelow=np.e**clipBelow, normalize=True)
+    spectrograms[index] = spectrogram  
+    tgradreal, fgradreal = ltfatpy.gabphasegrad('phase', np.angle(realDGT), fft_hop_size,
+                                                fft_window_length)
+    tgrads[index] = tgradreal /64
+    fgrads[index] = fgradreal /256
+
+shiftedSpectrograms = spectrograms/(-clipBelow/2)+1
+
+preprocessed_images = shiftedSpectrograms
 print (preprocessed_images)
 print(preprocessed_images.shape)
-exit()
+# exit()
 print(np.max(preprocessed_images[:, :256, :]))
 print(np.min(preprocessed_images[:, :256, :]))
 print(np.mean(preprocessed_images[:, :256, :]))
