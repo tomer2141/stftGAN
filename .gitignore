@@ -24,3 +24,6 @@ data/test_shlomi_dataset/
 data/sc09/
 *.mat
 saved_results/shlomi_data_summary/
+
+Pipfile
+gantools.egg-info/

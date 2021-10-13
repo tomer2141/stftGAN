@@ -38,7 +38,13 @@ wav_dir_path = "../../data/test_shlomi_dataset"
 preprocessed_images = []
 for wav_filename in os.listdir(wav_dir_path):
     if wav_filename.endswith(".wav"):
-        audio, sr = librosa.load(os.path.join(wav_dir_path, wav_filename), sr=None, dtype=np.float64)
+        print (wav_filename)
+        # sr, audio = scipy.io.wavfile.read(os.path.join(wav_dir_path, wav_filename))
+        try:
+            audio, sr = librosa.load(os.path.join(wav_dir_path, wav_filename), sr=None, dtype=np.float64)
+        except:
+            continue
+
         if len(audio) < 16000:
             before = int(np.floor((16000-len(audio))/2))
             after = int(np.ceil((16000-len(audio))/2))
