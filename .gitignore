@@ -27,3 +27,7 @@ saved_results/shlomi_data_summary/
 
 Pipfile
 gantools.egg-info/
+
+*.png
+*.zip
+saved_results/shlomi_data_checkpoints/

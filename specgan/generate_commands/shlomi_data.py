@@ -23,20 +23,8 @@ downscale = 1
 
 print('start')
 
-mat_path = "../../data/test_spectrograms_and_derivs_1.mat"
-raw_data = scipy.io.loadmat(mat_path)
-preprocessed_images = raw_data['logspecs']
-del raw_data
 
-print(preprocessed_images.shape)
-print(np.max(preprocessed_images[:, :256, :]))
-print(np.min(preprocessed_images[:, :256, :]))
-print(np.mean(preprocessed_images[:, :256, :]))
-
-dataset = Dataset(preprocessed_images[:, :256])
-
-
-time_str = 'commands_md64_8k'
+time_str = 'shlomi_data'
 global_path = '../../saved_results'
 
 name = time_str
@@ -164,7 +152,7 @@ for index, magSpectrogram in enumerate(generated_signals):
     logMagSpectrogram = np.log(magSpectrogram.astype(np.float64))
     phase = pghi(logMagSpectrogram, tgrads[index], fgrads[index], fft_hop_size, fft_window_length, L, tol=10)
     reconstructed_audios[index] = anStftWrapper.reconstructSignalFromLoggedSpectogram(logMagSpectrogram, phase, windowLength=fft_window_length, hopSize=fft_hop_size)
-    print(reconstructed_audios[index].max())
+    # print(reconstructed_audios[index].max())
 
 print("reconstructed audios!")
 
