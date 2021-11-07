@@ -22,9 +22,10 @@ __pycache__
 # data sets #
 data/test_shlomi_dataset/
 data/sc09/
+data/mlp_mapper/
 *.mat
 saved_results/shlomi_data_summary/
-
+1
 Pipfile
 gantools.egg-info/
 

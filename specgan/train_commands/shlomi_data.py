@@ -109,7 +109,6 @@ print(preprocessed_images.shape)
 print(np.max(preprocessed_images[:, :256, :]))
 print(np.min(preprocessed_images[:, :256, :]))
 print(np.mean(preprocessed_images[:, :256, :]))
-input()
 dataset = Dataset(preprocessed_images[:, :256])
 
 
