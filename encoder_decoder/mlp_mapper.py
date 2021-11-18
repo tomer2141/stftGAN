@@ -14,15 +14,20 @@ WAV_PARAMS['3.cutoff'] = 16
 WAV_PARAMS['4.resonance'] = 16
 
 class MlpMapper(tf.keras.Model):
-    def __init__(self, num_of_params, out_features):
+    def __init__(self, vector_length, out_features):
         super(MlpMapper, self).__init__()
-        self.num_of_params = num_of_params
+        self.vector_length = vector_length
 
         self.classifier = Sequential()
-        self.classifier.add(Dense(256, input_shape=(self.num_of_params,), activation="relu"))
+        self.classifier.add(Dense(256, input_shape=(self.vector_length,), activation="relu"))
         self.classifier.add(Dense(128, activation="relu"))
         self.classifier.add(Dense(out_features, activation="softmax"))
 
     def call(self, input_tensor, training=False):
+        """
+        input_tensor will contain the index position at which it should be 1
+        """
+        print (input_tensor)
+        # x = 
         x = self.classifier(input_tensor)
         return x
