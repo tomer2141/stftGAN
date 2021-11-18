@@ -3,7 +3,6 @@ from tensorflow.python.keras.layers.core import Dense
 from tensorflow.python.keras.models import Sequential
 from collections import OrderedDict
 
-from tensorflow.python.pywrap_tensorflow_internal import Flatten
 # print (dir(ordereddict.OrderedDict))
 
 class EncoderModel(tf.keras.Model):

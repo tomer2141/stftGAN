@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: gantools
+Version: 0.0.2
+Summary: Generative Adversarial Networks Toolbox
+Home-page: https://github.com/nperraud/gantools
+Author: Nathanael Perraudin
+Author-email: nathanael (dot) perraudin (at) sdsc (dot) ethz (dot) ch
+License: MIT
+Platform: UNKNOWN
+License-File: LICENSE.txt
+
+UNKNOWN
+
