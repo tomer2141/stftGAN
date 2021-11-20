@@ -8,12 +8,13 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 import pandas as pd
 import numpy as np
-from encoder_decoder import MlpMapper, FitMlpMappers, MappersDataset, WAV_PARAMS, NUMBER_OF_OUTPUTS_FROM_MAPPER, Paper_GAN, process_waves_folder, MapToLatent
+from encoder_decoder import MapWithGanNN, FitMlpMappers, MappersDataset, WAV_PARAMS, NUMBER_OF_OUTPUTS_FROM_MAPPER, Paper_GAN, process_waves_folder, MapToLatent
 from collections import OrderedDict
 from gantools.data.Dataset import Dataset
 import tensorflow as tf
 from more_itertools import chunked
-graph = tf.get_default_graph()
+
+# graph = tf.get_default_graph()
 # tf.enable_eager_execution()
 
 def build_mappers() -> OrderedDict:
@@ -40,9 +41,9 @@ def extract_encodings_from_pd(params: pd.DataFrame) -> np.ndarray:
         
     return matrix_of_encoding
 
-
+@tf.function
 def mappers_loss(target_spec: tf.Tensor, gan_spec: tf.Tensor) -> tf.Tensor:
-    pass
+    return 1.
 
 if __name__ == "__main__":
     print ("Train Mlp Mappers")
@@ -59,20 +60,28 @@ if __name__ == "__main__":
     print ("\nspectograms shape:")
     print (processed_waves.shape)
 
-    #define models
-    map_models: OrderedDict = build_mappers()
-    paper_GAN = Paper_GAN()
-    map_to_latent = MapToLatent(NUMBER_OF_OUTPUTS_FROM_MAPPER * len(list(WAV_PARAMS.items())), 100)
+    #define models 
+    model = MapWithGanNN()
+    model.train(None, None)
+    # map_models: OrderedDict = build_mappers()
+    # paper_GAN = Paper_GAN()
+    # map_to_latent = MapToLatent(NUMBER_OF_OUTPUTS_FROM_MAPPER * len(list(WAV_PARAMS.items())), 100)
     
     # dataset = MappersDataset(WAV_PARAMS, processed_waves, wav_encodings)
     # print (dict_of_wav_encodings)
     # train
-    training = FitMlpMappers(map_models, map_to_latent, paper_GAN)
-    training.compile(
-        optimizer=keras.optimizers.Adam(),
-        loss=mappers_loss
-    )
-    training.fit(keras.layers.Input(wav_encodings), processed_waves, batch_size=15, epochs=2)
+    # training = FitMlpMappers(map_models, map_to_latent, paper_GAN, dynamic=True)
+    # training.compile(
+    #     optimizer=keras.optimizers.Adam(),
+    #     loss=mappers_loss,
+    #     run_eagerly=True
+    # ) 
+
+    # # with tf.Session() as sess:
+    # #     print(self._sess.run([mappers_loss, keras.optimizers.Adam()], feed_dict))
+        
+    #     # sess.run()
+    # training.fit(wav_encodings, processed_waves, batch_size=15, epochs=2)
     # epochs = 1
     # batches = 15
     # for epoch in range(1, epochs+1):

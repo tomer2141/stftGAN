@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "specgan/train_commands/mlp_mapper.py",
             "console": "integratedTerminal",
             "env": { "PYTHONPATH": "${workspaceRoot}"}
         }

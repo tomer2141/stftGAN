@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.python.keras.layers.core import Dense
+from tensorflow.python.keras import layers
 from tensorflow.python.keras.models import Sequential
 from collections import OrderedDict
 
@@ -25,8 +25,8 @@ class EncoderModel(tf.keras.Model):
         self.features.add(tf.keras.layers.Flatten())
 
         self.classifier = Sequential()
-        self.classifier.add(Dense(self.sum_of_params, input_shape=(3072,), activation="relu"))
-        self.classifier.add(Dense(self.sum_of_params, activation="softmax"))
+        self.classifier.add(layers.Dense(self.sum_of_params, input_shape=(3072,), activation="relu"))
+        self.classifier.add(layers.Dense(self.sum_of_params, activation="softmax"))
 
     def call(self, input_tensor, training=False):
         x = self.features(input_tensor)

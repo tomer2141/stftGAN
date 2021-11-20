@@ -2,7 +2,6 @@ __all__ = ['MappersDataset']
 
 from collections import OrderedDict
 import numpy as np
-from tensorflow.python.keras.engine.input_layer import Input
 
 class MappersDataset():
     def __init__(self, wav_params: OrderedDict, processed_waves: np.ndarray, wav_encodings: dict) -> None:
