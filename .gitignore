@@ -1,0 +1,7 @@
+data/
+venv/
+checkpoints/
+generated_wavs/
+wandb/
+temp/
+images/
