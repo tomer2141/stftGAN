@@ -74,6 +74,8 @@ print("Starting training loop...")
 for epoch in range(cfg.num_epochs):
     for i, data in enumerate(dataloader, 0):
         netD.zero_grad()
+        netD.train()
+        netG.eval()
         real_data = data.to(cfg.device)
         fake_z = torch.randn(cfg.batch, cfg.gen_latent_dim, device=cfg.device)
         fake_data = netG(fake_z).to(cfg.device)
@@ -82,8 +84,10 @@ for epoch in range(cfg.num_epochs):
         D_loss.backward(retain_graph=True)
         optimizerD.step()
 
-        optimizerG.zero_grad()
         if i % cfg.n_critic == 0:
+            netG.zero_grad()
+            netG.train()
+            netD.eval()
             fake_z = torch.randn(cfg.batch, cfg.gen_latent_dim, device=cfg.device)
             fake_data = netG(fake_z).to(cfg.device)
             G_loss = get_lossG(netD, fake_data)
